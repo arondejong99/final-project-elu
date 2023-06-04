@@ -180,4 +180,33 @@ def plot_confusion_matrix(preds, true_values, labels, title):
     ax.set_title(title)
     plt.show()
 
+# A function that displays the ROC curve with the AUC score in it
+def displayRocCurve(true, pred, estimator_name):
+    # Calculate the auc based on the fpr and tpr
+    fpr, tpr, _ = roc_curve(true, pred)
+    #print(fpr, tpr)
+    auc_bin = roc_auc_score(true, pred)
+
+    roc_display = RocCurveDisplay(fpr = fpr, tpr = tpr, roc_auc = auc_bin, 
+                                  estimator_name = estimator_name)
+
+    roc_display.plot()
+
+def regression_results(y_true, y_pred):
+
+    # Regression metrics to use
+    explained_variance=explained_variance_score(y_true, y_pred)
+    mae=mean_absolute_error(y_true, y_pred) 
+    mse=mean_squared_error(y_true, y_pred) 
+   # mean_sq_log_error=mean_squared_log_error(y_true, y_pred)
+    r2=r2_score(y_true, y_pred)
+
+    # Print out the regression metrics
+    print(f"Explained_variance score for Regression Neural Network: {explained_variance:.2f}")    
+    #print(f"Mean Squared Log error for Regression Neural Network: {mean_sq_log_error:.4f}")
+    print(f"R2 score for Regression Neural Network: {r2:.4f}")
+    print(f"Mean absolute error score for Regression Neural Network: {mae:.4f}")
+    print(f"Mean Squared error for Regression Neural Network: {mse:.4f}")
+    print(f"Root Mean Squared error for Regression Neural Network: {np.sqrt(mse):.4f}")
+
 print("Functions import succesfull")
