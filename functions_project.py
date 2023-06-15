@@ -7,25 +7,12 @@ import matplotlib.image as mpimg
 import seaborn as sns
 import pandas as pd
 import pydicom as dicom
-from pathlib import Path
-import time
-from zipfile import ZipFile 
-import cv2
-from tqdm import tqdm
-import glob
-import tensorflow as tf
-from tensorflow.data import Dataset
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, BatchNormalization, Flatten, Dropout, Dense, Convolution1D, MaxPool1D
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.activations import relu, sigmoid
 from keras.callbacks import EarlyStopping
-from sklearn.model_selection import train_test_split
-from keras.utils.vis_utils import plot_model
-from sklearn.metrics import accuracy_score, confusion_matrix, mean_absolute_error, recall_score
-import visualkeras
-import xmltodict
-import visualkeras
+from sklearn.metrics import confusion_matrix, mean_absolute_error
 
 # Create function that shows the distribution between a set of columns
 def distributionPlot(x, colors, labels, title):
