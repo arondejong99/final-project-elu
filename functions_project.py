@@ -166,11 +166,11 @@ def train_model(model, metrics, loss_function, optimizer, monitor,
     return(hist)
 
 # Create a function that displays the Accuracy of the training and validation data
-def plot_accuracy(acc, val_acc, title, ylabel):
+def plot_accuracy(acc, val_acc, title, ylabel, figsize):
     x = np.arange(1, len(acc) + 1)
     x_ticks = np.arange(1, len(acc) + 1, 2)
 
-    fig, ax = plt.subplots(figsize = (8, 8))
+    fig, ax = plt.subplots(figsize = figsize)
 
     # summarize history for accuracy
     ax.plot(x, acc)
@@ -183,13 +183,13 @@ def plot_accuracy(acc, val_acc, title, ylabel):
     plt.show()
 
 # Create a function that displays the correlation matrix
-def plot_confusion_matrix(preds, true_values, labels, title):
+def plot_confusion_matrix(preds, true_values, labels, title, figsize):
     
     # Create the confusion matrix
     conf_matrix = confusion_matrix(true_values, preds)
 
     # Display the confusion matrix
-    fig, ax = plt.subplots(figsize = (8,8))
+    fig, ax = plt.subplots(figsize = figsize)
     sns.heatmap(conf_matrix, annot = True, cbar = False, 
                 fmt = 'd', cmap = 'Blues', ax = ax, xticklabels = labels,
                 yticklabels = labels)
@@ -199,8 +199,8 @@ def plot_confusion_matrix(preds, true_values, labels, title):
     plt.show()
 
 # A function that displays the ROC curve with the AUC score in it
-def displayRocCurve(true, pred, estimator_name):
-    fig, ax = plt.subplots(figsize = (8, 8))
+def displayRocCurve(true, pred, estimator_name, figsize):
+    fig, ax = plt.subplots(figsize = figsize)
     # Calculate the auc based on the fpr and tpr
     fpr, tpr, _ = roc_curve(true, pred)
     #print(fpr, tpr)
