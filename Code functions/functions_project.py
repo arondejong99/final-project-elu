@@ -21,8 +21,8 @@ from tensorflow.keras.activations import relu, sigmoid
 from keras.callbacks import EarlyStopping
 from sklearn.metrics import confusion_matrix, mean_absolute_error, mean_squared_error, r2_score, roc_curve, roc_auc_score, RocCurveDisplay, explained_variance_score
 
-# Get the normal lung dataset from the zip file
-def getNormalLungsData(normal_lungs_path):
+# Functions that import and reads the normal lung dataset from the zip file
+def get_normal_lungs_data(normal_lungs_path):
     # open the zip file in read mode
     with ZipFile(normal_lungs_path, 'r') as normal_lungs_zip: 
         # Extract all the files
@@ -41,6 +41,40 @@ def getNormalLungsData(normal_lungs_path):
 
     return(normalLungsImages)
 
+def create_annotation_df(filePath, cols):
+    # Open the zip file
+    with ZipFile(filePath, 'r') as zip_annotations:
+        # Get all the names of the directories and filter them if they have an xml file
+        listOfiles = zip_annotations.namelist()
+        listPaths = [path for path in listOfiles if str(path).endswith(".xml")]
+
+        # Set up list and append them for each xml file
+        xmin, ymin, xmax, ymax, patientId, sopInstanceId = [],[],[],[], [], []
+        for path in range(len(listPaths)):
+            with zip_annotations.open(listPaths[path]) as fd:
+                # Some xml files are invalid. Therefore we use a try and except method            
+                try:
+                    # Retrieve the data
+                    path_file = Path(str(fd))
+                    read = fd.read()
+                    doc = xmltodict.parse(read)
+                    patientId.append("Lung_Dx-" + path_file.parts[-2])
+                    sopInstanceId.append(str(path_file.stem))
+                    
+                    # Appen the retrieved data to the lists set earlier
+                    xmin.append(doc["annotation"]["object"]["bndbox"]["xmin"])
+                    ymin.append(doc["annotation"]["object"]["bndbox"]["ymin"])
+                    xmax.append(doc["annotation"]["object"]["bndbox"]["xmax"])
+                    ymax.append(doc["annotation"]["object"]["bndbox"]["xmin"])
+                    
+                except:
+                    continue
+
+        # Create the dataframe for the annotation data
+        annot_df = pd.DataFrame(zip(patientId, sopInstanceId, xmin, ymin, xmax, ymax), columns=cols)     
+
+        return(annot_df)
+
 # Create function that shows the distribution between a set of columns
 def distributionPlot(x, colors, labels, title):
     x = x.value_counts(normalize = True)
@@ -50,18 +84,23 @@ def distributionPlot(x, colors, labels, title):
     plt.show()
 
 # Create function that shows dicom image based on input path
-def displayDicomImage(basepath, path, title, ax):
+def display_dicom_image(basepath, path, title, ax):
     # enter DICOM image name for pattern
     # result is a list of 1 element
     filename = dicom.data.data_manager.get_files(basepath, path)[0]
 
     img = dicom.dcmread(filename)
 
-    ax.imshow(img.pixel_array, cmap=plt.cm.bone)  # set the color map to bone
+    # set the color map to bone
+    ax.imshow(img.pixel_array, cmap=plt.cm.bone)  
     ax.set_title(title)
 
-def displayPngImage(path, title, ax):
+# Create a function that displays an PNG image
+def display_png_image(path, title, ax):
+    # Read the image
     img = mpimg.imread(path)
+
+    # Dispaly the image
     ax.imshow(X = img , cmap=plt.cm.bone)
     ax.set_title(title)
 
@@ -86,7 +125,7 @@ def create_binary_model(modelName, inputShape, filters):
     # Output layers
     pred_layer_bin = Dense(1, activation=sigmoid, name = "illness_output")(dense_layer)
     
-
+    # Create model based on earlier defined layers
     model = Model(inputs=input_layer, outputs=pred_layer_bin, name = modelName)
     return model
 
@@ -111,6 +150,7 @@ def create_categorical_model(modelName, inputShape, filters):
     # Output layer
     pred_layer_cat = Dense(4, activation='softmax', name = "cancer_type_output")(dense_layer)
 
+    # Create model based on earlier defined layers
     model = Model(inputs=input_layer, outputs=pred_layer_cat, name = modelName)
     return model
 
@@ -139,6 +179,7 @@ def create_regression_model(modelName, inputShape, filters):
     # Output layer
     pred_layer_reg = Dense(1, activation="linear", name = "tumor_size_output")(dense_layer3)
 
+    # Create model based on earlier defined layers
     model = Model(inputs=input_layer, outputs=pred_layer_reg, name = modelName)
     return(model)
 
@@ -166,6 +207,7 @@ def train_model(model, metrics, loss_function, optimizer, monitor,
     return(hist)
 
 # Create a function that displays the Accuracy of the training and validation data
+# note: this can also be used for other metrics, such as recall or loss.
 def plot_accuracy(acc, val_acc, title, ylabel, figsize):
     x = np.arange(1, len(acc) + 1)
     x_ticks = np.arange(1, len(acc) + 1, 2)
@@ -203,9 +245,9 @@ def displayRocCurve(true, pred, estimator_name, figsize):
     fig, ax = plt.subplots(figsize = figsize)
     # Calculate the auc based on the fpr and tpr
     fpr, tpr, _ = roc_curve(true, pred)
-    #print(fpr, tpr)
     auc_bin = roc_auc_score(true, pred)
 
+    # Create the ROC curve display and display it
     roc_display = RocCurveDisplay(fpr = fpr, tpr = tpr, roc_auc = auc_bin, 
                                   estimator_name = estimator_name)
 
@@ -217,49 +259,15 @@ def regression_results(y_true, y_pred):
     explained_variance=explained_variance_score(y_true, y_pred)
     mae=mean_absolute_error(y_true, y_pred) 
     mse=mean_squared_error(y_true, y_pred) 
-   # mean_sq_log_error=mean_squared_log_error(y_true, y_pred)
     r2=r2_score(y_true, y_pred)
 
     # Print out the regression metrics
     print(f"Explained_variance score for Regression Neural Network: {explained_variance:.2f}")    
-    #print(f"Mean Squared Log error for Regression Neural Network: {mean_sq_log_error:.4f}")
     print(f"R2 score for Regression Neural Network: {r2:.4f}")
     print(f"Mean absolute error score for Regression Neural Network: {mae:.4f}")
     print(f"Mean Squared error for Regression Neural Network: {mse:.4f}")
     print(f"Root Mean Squared error for Regression Neural Network: {np.sqrt(mse):.4f}")
 
-def createAnnotationDf(filePath, cols):
-    # Open the zip file
-    with ZipFile(filePath, 'r') as zip_annotations:
-        # Get all the names of the directories and filter them if they have an xml file
-        listOfiles = zip_annotations.namelist()
-        listPaths = [path for path in listOfiles if str(path).endswith(".xml")]
 
-        # Set up list and append them for each xml file
-        xmin, ymin, xmax, ymax, patientId, sopInstanceId = [],[],[],[], [], []
-        for path in range(len(listPaths)):
-            with zip_annotations.open(listPaths[path]) as fd:
-                # Some xml files are invalid. Therefore we use a try and except method            
-                try:
-                    # Retrieve the data
-                    path_file = Path(str(fd))
-                    read = fd.read()
-                    doc = xmltodict.parse(read)
-                    patientId.append("Lung_Dx-" + path_file.parts[-2])
-                    sopInstanceId.append(str(path_file.stem))
-                    
-                    # Appen the retrieved data to the lists set earlier
-                    xmin.append(doc["annotation"]["object"]["bndbox"]["xmin"])
-                    ymin.append(doc["annotation"]["object"]["bndbox"]["ymin"])
-                    xmax.append(doc["annotation"]["object"]["bndbox"]["xmax"])
-                    ymax.append(doc["annotation"]["object"]["bndbox"]["xmin"])
-                    
-                except:
-                    continue
-
-        # Create the dataframe for the annotation data
-        annot_df = pd.DataFrame(zip(patientId, sopInstanceId, xmin, ymin, xmax, ymax), columns=cols)     
-
-        return(annot_df)
 
 print("Functions import succesfull")

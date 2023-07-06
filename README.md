@@ -9,6 +9,9 @@ Ultimately, the following predictions will be done:
 For first prediction, you would need the following zip file: normal_ct_scans.zip
 You would also need a subselection of the data in the pcia file: Lung-PET-CT-Dx-NBIA-Manifest-122220.tcia
 
+For the second prediction, I used the TCIA file.
+And for the third and final prediction, I used the annotation data set: Lung-PET-CT-Dx-Annotations-XML-Files-rev12222020.zip
+
 For getting a subselection of the tcia file, the following patientIds are used:
 ['Lung_Dx-A0002' 'Lung_Dx-A0003' 'Lung_Dx-A0004' 'Lung_Dx-A0005'
  'Lung_Dx-A0007' 'Lung_Dx-A0009' 'Lung_Dx-A0010' 'Lung_Dx-A0016'
@@ -28,6 +31,12 @@ For getting a subselection of the tcia file, the following patientIds are used:
  'Lung_Dx-G0005' 'Lung_Dx-G0006' 'Lung_Dx-G0007' 'Lung_Dx-G0008'
  'Lung_Dx-G0009' 'Lung_Dx-G0010' 'Lung_Dx-G0011' 'Lung_Dx-G0012'
  'Lung_Dx-G0013' 'Lung_Dx-G0014' 'Lung_Dx-G0015' 'Lung_Dx-G0016']
+
+## Lay out project
+The project is separated into three different folders:
+- Code functions: in this folder, I host the functions_project.py file. These are the functions which will be used into the Jupyter Notebooks. These are hosted here to clear up space in the Jupyter Notebooks.
+- Data: this folder has two files: data-importing-and-cleaning.ipynb and data-visualization.ipynb. As the name suggest, these files are used for data importing, cleaning and visualization.
+- Neural Networks: this folder has the files where the Neural Networks are created, tested and evaluated.
 
  ## Get started
 When you clone the repository into your local machine, ou need to make sure the CDM files are stored there. It couldn't be stored in the github repo because of size issues. It was also impossible to zip the files and store them from there.
