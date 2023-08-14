@@ -35,8 +35,8 @@ For getting a subselection of the tcia file, the following patientIds are used:
 ## Lay out project
 The project is separated into three different folders:
 - Code functions: in this folder, I host the functions_project.py file. These are the functions which will be used into the Jupyter Notebooks. These are hosted here to clear up space in the Jupyter Notebooks.
-- Data: this folder has two files: data-importing-and-cleaning.ipynb and data-visualization.ipynb. As the name suggest, these files are used for data importing, cleaning and visualization.
-- Neural Networks: this folder has the files where the Neural Networks are created, tested and evaluated.
+- Data: this folder has two files: data-importing-and-cleaning.ipynb and data-visualization.ipynb. As the name suggest, these files are used for data importing, cleaning and visualization. I also host the functions_project_data.py file. These are the functions which will be used into the Jupyter Notebooks for this folder. These are hosted here to clear up space in the Jupyter Notebooks.
+- Neural Networks: this folder has the files where the Neural Networks are created, tested and evaluated. I also host the functions_project_nn.py file. These are the functions which will be used into the Jupyter Notebooks for this folder.
 
  ## Get started
 When you clone the repository into your local machine, ou need to make sure the CDM files are stored there. It couldn't be stored in the github repo because of size issues. It was also impossible to zip the files and store them from there.
@@ -44,5 +44,5 @@ When you clone the repository into your local machine, ou need to make sure the 
 To succesfully store the CDM files, take the following steps.
 1. Download the NBIA Data Retriever. The installation guide can be found here: https://wiki.cancerimagingarchive.net/display/NBIA/Downloading+TCIA+Images
 2. Open the tcia file using the NBIA Data Retriever.
-3. Download the files from the tcia file into your local machine. Be sure to store them in the following folder: `tciaDownload\manifest-1608669183333\Lung-PET-CT-Dx`. In this folder, the files are stored using the following folder format: [patient_id]/[date-NA-body-type]/[ct-scan-details]
+3. Download the files from the tcia file into your local machine. Be sure to store them in the following folder: `Data\Datasets\tciaDownload\manifest-1608669183333\Lung-PET-CT-Dx`. In this folder, the files are stored using the following folder format: [patient_id]/[date-NA-body-type]/[ct-scan-details]
 4. Once the files are stored, remove the folders with a patientId that doesn't match from the list mentioned above.
